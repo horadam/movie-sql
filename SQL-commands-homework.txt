@@ -1,0 +1,304 @@
+-- Select all columns and rows from the movies table
+SELECT * FROM movies
+
+-- Select only the title and id of the first 10 rows
+SELECT id, title FROM movies
+LIMIT 10
+
+-- Find the movie with the id of 485
+SELECT id, title FROM movies
+WHERE id=485
+
+-- Find the id (only that column) of the movie Made in America (1993)
+SELECT id FROM movies
+WHERE title='Made in America (1993)'
+
+-- Find the first 10 sorted alphabetically
+SELECT title FROM movies
+ORDER BY title
+LIMIT 10
+
+-- Find all movies from 2002
+SELECT title FROM movies
+WHERE title LIKE '%(2002)'
+
+-- Find out what year the Godfather came out
+SELECT title FROM movies
+WHERE title LIKE 'Godfather%'
+
+-- Without using joins find all the comedies
+SELECT title FROM movies
+WHERE genres LIKE '%Comedy%'
+
+-- Find all comedies in the year 2000
+SELECT 
+	title 
+FROM 
+	movies
+WHERE 
+	genres LIKE '%Comedy%' AND
+	title LIKE '%(2000)'
+
+-- Find any movies that are about death and are a comedy
+SELECT 
+	title 
+FROM 
+	movies
+WHERE 
+	genres LIKE '%Comedy%' AND
+	title LIKE '%death%'
+
+-- Find any movies from either 2001 or 2002 with a title containing super
+SELECT 
+	title 
+FROM 
+	movies
+WHERE
+	title LIKE '%super%' AND
+	title LIKE '%(2002)'OR
+	title LIKE '%super%' AND
+	title LIKE '%(2001)'
+	
+-- Create a new table called actors (We are going to pretend the actor can only play in one movie). The table should include name, character name, foreign key to movies and date of birth at least plus an id field.
+CREATE TABLE
+	actors(
+		actor_id INT AUTO_INCREMENT,
+		actor_name VARCHAR(255) NOT NULL,
+		character_name VARCHAR(255),
+		d_o_b DATE,
+		movie_id INT NOT NULL,
+		PRIMARY KEY (actor_id)
+	)
+
+-- Pick 3 movies and create insert statements for 10 actors each. You should use the multi value insert statements
+INSERT INTO actors (actor_name, character_name, d_o_b, movie_id)
+	VALUES
+	("Robert De Niro", "Sam 'Ace' Rothstein", '1945-01-01', 16),
+	("Sharon Stone", "Ginger McKenna", '1945-01-01', 16),
+	("Joe Pesci", "Nicky Santoro", '1945-01-01', 16),
+	("James Woods", "Lester Diamond", '1945-01-01', 16),
+	("Don Rickles", "Billy Sherbert", '1945-01-01', 16),
+	("Alan King", "Andy Stone", '1945-01-01', 16),
+	("Kevin Pollak", "Phillip Green", '1945-01-01', 16),
+	("L.Q. Jones", "Pat Webb", '1945-01-01', 16),
+	("Dick Smothers", "Senator", '1945-01-01', 16),
+	("Frank Vincent", "Frank Marino", '1945-01-01', 16),
+	("Nicolas Cage", "Ben Sanderson", '1954-08-07', 25),
+	("Elisabeth Shue", "Sera", '1954-08-07', 25),
+	("Julian Sands", "Yuri", '1954-08-07', 25),
+	("	Richard Lewis", "Peter", '1954-08-07', 25),
+	("Steven Weber", "Marc Nussbaum", '1954-08-07', 25),
+	("Kim Adams", "Sheila", '1954-08-07', 25),
+	("Emily Procter", "Debbie", '1954-08-07', 25),
+	("Stuart Regen", "Man at Bar", '1954-08-07', 25),
+	("Valeria Golino", "Terri", '1954-08-07', 25),
+	("Graham Beckel", "L.A. Bartender", '1954-08-07', 25),
+	("F. Murray Abraham", "Antonio Salieri", '1973-09-12', 1225),
+	("Tom Hulce", "asas", '1973-09-12', 1225),
+	("Tom Hulce", "Wolfgang Amadeus Mozart", '1973-09-12', 1225),
+	("Elizabeth Berridge", "Constanze Mozart", '1973-09-12', 1225),
+	("Roy Dotrice", "Leopold Mozart", '1973-09-12', 1225),
+	("Simon Callow", "Emanuel Schikaneder", '1973-09-12', 1225),
+	("Christine Ebersole", "Katerina Cavalieri", '1973-09-12', 1225),
+	("Jeffrey Jones", "Emperor Joseph II", '1973-09-12', 1225),
+	("Charles Kay", "Count Orsini-Rosenberg", '1973-09-12', 1225),
+	("Kenny Baker", "Parody Commendatore", '1973-09-12', 1225)
+	
+-- Create a new column in the movie table to hold the MPAA rating. UPDATE 5 different movies to their correct rating
+UPDATE movies
+	SET mpaa_rating = "R"
+	WHERE id = 1225
+	
+UPDATE movies
+	SET mpaa_rating = "G"
+	WHERE id = 1
+
+UPDATE movies
+	SET mpaa_rating = "R"
+	WHERE id = 25
+
+UPDATE movies
+	SET mpaa_rating = "R"
+	WHERE id = 6
+
+UPDATE movies
+	SET mpaa_rating = "PG-13"
+	WHERE id = 10
+
+
+-- WITH JOINS
+
+-- Find all the ratings for the movie Godfather, show just the title and the rating
+SELECT 
+	m.title, 
+	r.rating
+FROM 
+	movies m
+LEFT JOIN 
+	ratings r
+ON
+	m.id = r.movie_id	
+WHERE 
+	id=858
+
+-- Order the previous objective by newest to oldest
+SELECT 
+	m.title, 
+	r.rating
+FROM 
+	movies m
+LEFT JOIN 
+	ratings r
+ON
+	m.id = r.movie_id	
+WHERE 
+	id=858
+ORDER BY
+	r.timestamp  DESC
+
+
+-- Find the comedies from 2005 and get the title and imdbid from the links table
+SELECT 
+	m.title, 
+	l.imdb_Id
+FROM 
+	movies m
+LEFT JOIN 
+	links l
+ON
+	m.id = l.movie_Id	
+WHERE 
+	m.title LIKE '%(2005)' AND
+	m.genres LIKE '%Comedy%'
+
+-- Find all movies that have no ratings
+SELECT 
+	m.title 	
+FROM 
+	movies m
+LEFT JOIN 
+	ratings r
+ON
+	m.id = r.movie_id	
+WHERE 
+	r.movie_id IS NULL
+
+
+--AGGREGATES
+
+-- Get the average rating for a movie
+SELECT 
+	m.title, 
+	AVG(r.rating)
+FROM 
+	movies m
+LEFT JOIN 
+	ratings r
+ON
+	m.id = r.movie_id
+	
+GROUP BY 
+	m.title
+
+-- Get the total ratings for a movie
+SELECT 
+	m.title, 
+	SUM(r.rating) as total_rating
+FROM 
+	movies m
+LEFT JOIN 
+	ratings r
+ON
+	m.id = r.movie_id
+	
+GROUP BY 
+	m.title
+	
+ORDER BY
+	total_rating DESC
+
+-- Get the total movies for a genre
+SELECT  
+	COUNT(*) as number_of_comedies
+FROM 
+	movies
+WHERE
+	genres LIKE '%comedy%'
+
+
+-- Get the average rating for a user
+SELECT 
+	user_id, 
+	AVG(rating)
+FROM 
+	ratings
+GROUP BY 
+	user_id
+ORDER BY
+	user_id
+
+
+-- Find the user with the most ratings
+SELECT 
+	user_id, 
+	COUNT(rating) as ratings	
+FROM 
+	ratings
+GROUP BY 
+	user_id
+ORDER BY
+	ratings DESC
+LIMIT 1
+	
+
+-- Find the user with the highest average rating
+SELECT 
+	user_id, 
+	AVG(rating)
+FROM 
+	ratings
+GROUP BY 
+	user_id
+ORDER BY
+	AVG(rating) DESC
+LIMIT 1
+
+-- Find the user with the highest average rating with more than 50 reviews
+SELECT 
+	user_id, 
+	AVG(rating) as avg_rating,
+	COUNT(rating) as ratings
+	
+FROM 
+	ratings
+
+GROUP BY 
+	user_id
+
+HAVING
+	ratings>50
+
+ORDER BY
+	AVG(rating) DESC
+	
+LIMIT 1
+
+-- Find the movies with an average rating over 4
+SELECT 
+	m.title, 
+	AVG(r.rating)
+FROM 
+	movies m
+LEFT JOIN 
+	ratings r
+ON
+	m.id = r.movie_id
+GROUP BY 
+	m.title
+HAVING
+	AVG(r.rating) > 4	
+ORDER BY
+	AVG(r.rating) DESC
+
+
+
